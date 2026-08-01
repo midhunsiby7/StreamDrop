@@ -1,0 +1,74 @@
+<resources>
+    <string name="app_name">StreamDrop</string>
+    <string name="app_tagline">Download anything, beautifully</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">StreamDrop</string>
+    <string name="home_subtitle">Paste a YouTube link to get started</string>
+    <string name="url_input_hint">Paste YouTube URL here…</string>
+    <string name="btn_paste">Paste</string>
+    <string name="btn_analyze">Analyze</string>
+    <string name="btn_clear">Clear</string>
+
+    <!-- Analyze Screen -->
+    <string name="analyzing">Analyzing…</string>
+    <string name="analysis_failed">Could not analyze this URL</string>
+    <string name="invalid_url">Please enter a valid YouTube URL</string>
+    <string name="format_mp4">Video (MP4)</string>
+    <string name="format_mp3">Audio (MP3)</string>
+    <string name="label_quality">Quality</string>
+    <string name="label_format">Format</string>
+    <string name="label_filename">File Name</string>
+    <string name="btn_download">Download</string>
+
+    <!-- Download Screen -->
+    <string name="downloading">Downloading…</string>
+    <string name="download_paused">Paused</string>
+    <string name="download_completed">Download Complete!</string>
+    <string name="download_failed">Download Failed</string>
+    <string name="btn_pause">Pause</string>
+    <string name="btn_resume">Resume</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_open_file">Open File</string>
+    <string name="btn_share">Share</string>
+    <string name="btn_open_folder">Open Folder</string>
+
+    <!-- History Screen -->
+    <string name="history_title">Download History</string>
+    <string name="history_empty_title">No downloads yet</string>
+    <string name="history_empty_subtitle">Your completed downloads will appear here</string>
+    <string name="search_hint">Search downloads…</string>
+    <string name="delete_history_item">Delete</string>
+    <string name="undo">Undo</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dark_mode">Dark Mode</string>
+    <string name="settings_download">Downloads</string>
+    <string name="settings_default_quality">Default Quality</string>
+    <string name="settings_default_format">Default Format</string>
+    <string name="settings_max_concurrent">Max Concurrent Downloads</string>
+    <string name="settings_clear_history">Clear Download History</string>
+    <string name="settings_clear_history_confirm">This will permanently delete all download history. Continue?</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Errors -->
+    <string name="error_network">No internet connection</string>
+    <string name="error_storage_full">Storage is full. Free up space and try again</string>
+    <string name="error_permission_denied">Storage permission required to save downloads</string>
+    <string name="error_unsupported_url">This URL is not supported</string>
+    <string name="error_generic">Something went wrong. Please try again</string>
+
+    <!-- Notifications -->
+    <string name="notif_channel_download">Downloads</string>
+    <string name="notif_channel_download_desc">Shows download progress and completion</string>
+    <string name="notif_download_progress">Downloading %1$s</string>
+    <string name="notif_download_complete">%1$s downloaded</string>
+</resources>

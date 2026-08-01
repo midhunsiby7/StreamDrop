@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme (required for Compose / Splash Screen API) -->
+    <style name="Theme.StreamDrop" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Splash Screen theme -->
+    <style name="Theme.StreamDrop.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#0D0E14</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="windowSplashScreenAnimationDuration">800</item>
+        <item name="postSplashScreenTheme">@style/Theme.StreamDrop</item>
+    </style>
+
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App launcher icon: drop + download arrow on dark background -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Background -->
+    <path
+        android:fillColor="#1A1B25"
+        android:pathData="M0,0h108v108h-108z" />
+
+    <!-- Gradient overlay circle -->
+    <path
+        android:fillColor="#207C6AF7"
+        android:pathData="M54,54m-45,0a45,45 0,1 1,90 0a45,45 0,1 1,-90 0" />
+
+    <!-- Drop -->
+    <path
+        android:fillColor="#7C6AF7"
+        android:pathData="M54,22C54,22 36,41 36,52C36,62.5 44.1,71 54,71C63.9,71 72,62.5 72,52C72,41 54,22 54,22Z" />
+
+    <!-- Highlight -->
+    <path
+        android:fillColor="#A89EFF"
+        android:pathData="M49,38C47,43 45,48 45,52C45,55 46.5,58 49,60C47,57 46,54 46,51C46,47 47.5,43 49,38Z" />
+
+    <!-- Arrow -->
+    <path
+        android:fillColor="#4ECDC4"
+        android:strokeColor="#4ECDC4"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M54,74 L54,88 M45,80.5 L54,89 L63,80.5" />
+
+</vector>

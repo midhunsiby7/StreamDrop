@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Splash screen animated logo: a stylized drop icon with gradient -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer glow circle -->
+    <path
+        android:fillColor="#1A7C6AF7"
+        android:pathData="M54,54m-46,0a46,46 0,1 1,92 0a46,46 0,1 1,-92 0" />
+
+    <!-- Inner circle -->
+    <path
+        android:fillColor="#2A7C6AF7"
+        android:pathData="M54,54m-36,0a36,36 0,1 1,72 0a36,36 0,1 1,-72 0" />
+
+    <!-- Drop shape (stream symbol) -->
+    <path
+        android:fillColor="#7C6AF7"
+        android:pathData="M54,24
+            C54,24 38,42 38,52
+            C38,61.4 45.2,69 54,69
+            C62.8,69 70,61.4 70,52
+            C70,42 54,24 54,24Z" />
+
+    <!-- Inner highlight on drop -->
+    <path
+        android:fillColor="#B0A8FF"
+        android:pathData="M50,42
+            C48,46 46,50 46,53
+            C46,56 47.5,58.5 50,60
+            C48,57 47,54.5 47,52
+            C47,49 48.5,45.5 50,42Z" />
+
+    <!-- Download arrow -->
+    <path
+        android:fillColor="#4ECDC4"
+        android:strokeColor="#4ECDC4"
+        android:strokeWidth="2"
+        android:pathData="M54,72 L54,86 M46,79 L54,87 L62,79" />
+
+</vector>
