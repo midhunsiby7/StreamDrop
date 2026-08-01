@@ -71,7 +71,8 @@
             xmlns:tools="http://schemas.android.com/tools">
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
-                android:value="androidx.startup" />
+                android:value="androidx.startup"
+                tools:node="remove" />
         </provider>
 
     </application>

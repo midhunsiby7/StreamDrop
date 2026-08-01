@@ -93,8 +93,8 @@ fun StreamDropNavGraph(
             AnalyzeScreen(
                 url        = url,
                 onBack     = { navController.popBackStack() },
-                onDownload = { downloadId ->
-                    navController.navigate(Screen.Download.createRoute(downloadId)) {
+                onDownload = {
+                    navController.navigate(Screen.Download.createRoute()) {
                         popUpTo(Screen.Home.route)
                     }
                 }
@@ -104,9 +104,6 @@ fun StreamDropNavGraph(
         // ─── Active Download (slide from right) ───────────────────────────────
         composable(
             route = Screen.Download.route,
-            arguments = listOf(
-                navArgument("downloadId") { type = NavType.LongType }
-            ),
             enterTransition = {
                 slideInHorizontally(
                     initialOffsetX = { it },
@@ -119,17 +116,8 @@ fun StreamDropNavGraph(
                     animationSpec = tween(350),
                 ) + fadeOut(tween(350))
             },
-        ) { backStackEntry ->
-            val downloadId = backStackEntry.arguments?.getLong("downloadId") ?: -1L
-            DownloadScreen(
-                downloadId = downloadId,
-                onBack     = { navController.popBackStack() },
-                onGoHome   = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                },
-            )
+        ) {
+            DownloadScreen()
         }
     }
 }

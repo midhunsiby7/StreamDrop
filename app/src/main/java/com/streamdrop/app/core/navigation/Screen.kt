@@ -19,8 +19,8 @@ sealed class Screen(val route: String) {
         fun createRoute(url: String) = "analyze?url=${url}"
     }
 
-    /** Active download screen receives the downloadId */
-    data object Download : Screen("download/{downloadId}") {
-        fun createRoute(downloadId: Long) = "download/$downloadId"
+    /** Active downloads screen */
+    data object Download : Screen("download") {
+        fun createRoute() = "download"
     }
 }

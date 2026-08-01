@@ -146,7 +146,8 @@ fun AnalyzeLoadingState() {
 fun AnalyzeSuccessState(
     metadata: YtDlpMetadata,
     url: String,
-    onDownload: (downloadId: Long) -> Unit
+    onDownload: () -> Unit,
+    downloadViewModel: com.streamdrop.app.feature.download.DownloadViewModel = hiltViewModel()
 ) {
     var selectedFormat by remember { mutableStateOf("Video (MP4)") }
     var selectedQuality by remember { mutableStateOf("1080p") }
@@ -235,8 +236,15 @@ fun AnalyzeSuccessState(
                 GradientButton(
                     text = "Download",
                     onClick = { 
-                        // To be implemented in Stage 3
-                        // onDownload(123L) 
+                        downloadViewModel.startDownload(
+                            url = url,
+                            title = metadata.title ?: "Unknown",
+                            thumbnail = metadata.thumbnail,
+                            formatId = "best",
+                            estimatedSize = metadata.formats?.lastOrNull()?.filesizeApprox ?: 100_000_000L,
+                            fileName = fileName
+                        )
+                        onDownload() 
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
