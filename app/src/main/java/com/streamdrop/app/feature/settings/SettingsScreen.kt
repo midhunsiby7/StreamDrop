@@ -2,353 +2,198 @@ package com.streamdrop.app.feature.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.streamdrop.app.core.ui.components.*
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.streamdrop.app.core.ui.components.GlassCard
 import com.streamdrop.app.core.ui.theme.*
 
-/**
- * SettingsScreen (Stage 1 Shell)
- *
- * Shows the settings UI layout with real toggle and selector components.
- * DataStore persistence will be connected in Stage 5.
- */
 @Composable
-fun SettingsScreen() {
-    var darkModeEnabled by remember { mutableStateOf(true) }
-    var defaultQuality  by remember { mutableStateOf("1080p") }
-    var defaultFormat   by remember { mutableStateOf("MP4") }
-    var maxConcurrent   by remember { mutableStateOf(2) }
+fun SettingsScreen(
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
+    val isDarkTheme by viewModel.isDarkTheme.collectAsState()
+    val defaultQuality by viewModel.defaultQuality.collectAsState()
+    val maxConcurrent by viewModel.maxConcurrentDownloads.collectAsState()
 
-    Box(
+    val qualities = listOf("Best", "4K", "1080p", "720p", "480p", "Audio Only")
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background),
+            .background(Background)
+            .statusBarsPadding()
+            .padding(horizontal = 24.dp),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp),
-        ) {
-            Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text  = "Settings",
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-            )
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // ── Appearance Section ─────────────────────────────────────────
-            SettingsSectionHeader(title = "Appearance", icon = Icons.Rounded.Palette)
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            GlassCard(
-                modifier     = Modifier.fillMaxWidth(),
-                cornerRadius = 20.dp,
-            ) {
-                Column(modifier = Modifier.padding(4.dp)) {
-                    SettingsToggleRow(
-                        icon     = Icons.Rounded.DarkMode,
-                        title    = "Dark Mode",
-                        subtitle = "Use dark theme throughout the app",
-                        checked  = darkModeEnabled,
-                        onToggle = { darkModeEnabled = it },
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // ── Downloads Section ──────────────────────────────────────────
-            SettingsSectionHeader(title = "Downloads", icon = Icons.Rounded.Download)
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            GlassCard(
-                modifier     = Modifier.fillMaxWidth(),
-                cornerRadius = 20.dp,
-            ) {
-                Column(modifier = Modifier.padding(4.dp)) {
-                    SettingsChooserRow(
-                        icon     = Icons.Rounded.HighQuality,
-                        title    = "Default Quality",
-                        subtitle = "Applied when quick-downloading",
-                        value    = defaultQuality,
-                        options  = listOf("4K", "1080p", "720p", "480p", "360p"),
-                        onSelect = { defaultQuality = it },
-                    )
-
-                    GradientDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-                    SettingsChooserRow(
-                        icon     = Icons.Rounded.VideoFile,
-                        title    = "Default Format",
-                        subtitle = "MP4 for video, MP3 for audio",
-                        value    = defaultFormat,
-                        options  = listOf("MP4", "MP3"),
-                        onSelect = { defaultFormat = it },
-                    )
-
-                    GradientDivider(modifier = Modifier.padding(horizontal = 16.dp))
-
-                    SettingsStepperRow(
-                        icon     = Icons.Rounded.Queue,
-                        title    = "Max Concurrent Downloads",
-                        subtitle = "Recommended: 2",
-                        value    = maxConcurrent,
-                        range    = 1..5,
-                        onStep   = { maxConcurrent = it },
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // ── Danger Zone ────────────────────────────────────────────────
-            SettingsSectionHeader(title = "Data", icon = Icons.Rounded.Storage)
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            GlassCard(
-                modifier     = Modifier.fillMaxWidth(),
-                cornerRadius = 20.dp,
-                glowColor    = StatusError.copy(alpha = 0.25f),
-            ) {
-                Row(
-                    modifier          = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(StatusError.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector        = Icons.Rounded.DeleteSweep,
-                            contentDescription = null,
-                            tint               = StatusError,
-                            modifier           = Modifier.size(20.dp),
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text  = "Clear Download History",
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color      = TextPrimary,
-                                fontWeight = FontWeight.Medium,
-                            ),
-                        )
-                        Text(
-                            text  = "Permanently removes all records",
-                            style = MaterialTheme.typography.bodySmall.copy(color = TextTertiary),
-                        )
-                    }
-                    GhostButton(text = "Clear", onClick = { /* Stage 5 */ })
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // App version
-            Text(
-                text  = "StreamDrop v1.0.0 · Stage 1",
-                style = MaterialTheme.typography.bodySmall.copy(color = TextTertiary),
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-    }
-}
-
-// ─── Section Header ───────────────────────────────────────────────────────────
-
-@Composable
-private fun SettingsSectionHeader(title: String, icon: ImageVector) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Icon(
-            imageVector        = icon,
-            contentDescription = null,
-            tint               = Violet400,
-            modifier           = Modifier.size(18.dp),
-        )
         Text(
-            text  = title.uppercase(),
-            style = MaterialTheme.typography.labelMedium.copy(
-                color        = Violet400,
-                fontWeight   = FontWeight.SemiBold,
-                letterSpacing = 1.5.sp,
-            ),
+            text = "Settings",
+            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold, color = TextPrimary)
         )
-    }
-}
 
-// ─── Toggle Row ───────────────────────────────────────────────────────────────
+        Spacer(modifier = Modifier.height(32.dp))
 
-@Composable
-private fun SettingsToggleRow(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    checked: Boolean,
-    onToggle: (Boolean) -> Unit,
-) {
-    Row(
-        modifier          = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SettingsIconBox(icon = icon)
-        Spacer(modifier = Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge.copy(color = TextPrimary, fontWeight = FontWeight.Medium))
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
-        }
-        Switch(
-            checked         = checked,
-            onCheckedChange = onToggle,
-            colors          = SwitchDefaults.colors(
-                checkedThumbColor       = TextOnPrimary,
-                checkedTrackColor       = Violet500,
-                uncheckedThumbColor     = TextSecondary,
-                uncheckedTrackColor     = SurfaceElevated,
-            ),
+        Text(
+            text = "Appearance",
+            style = MaterialTheme.typography.labelLarge.copy(color = Violet400)
         )
-    }
-}
+        Spacer(modifier = Modifier.height(12.dp))
 
-// ─── Chooser Row ─────────────────────────────────────────────────────────────
-
-@Composable
-private fun SettingsChooserRow(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    value: String,
-    options: List<String>,
-    onSelect: (String) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Row(
-        modifier          = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SettingsIconBox(icon = icon)
-        Spacer(modifier = Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title,    style = MaterialTheme.typography.bodyLarge.copy(color = TextPrimary, fontWeight = FontWeight.Medium))
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
-        }
-        Box {
-            TextButton(onClick = { expanded = true }) {
-                Text(text = value, color = Violet400, fontWeight = FontWeight.SemiBold)
-                Icon(Icons.Rounded.ArrowDropDown, contentDescription = null, tint = Violet400)
-            }
-            DropdownMenu(
-                expanded        = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                options.forEach { opt ->
-                    DropdownMenuItem(
-                        text    = { Text(opt) },
-                        onClick = { onSelect(opt); expanded = false },
+        GlassCard(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 16.dp,
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Theme Toggle
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Dark Mode", style = MaterialTheme.typography.bodyLarge.copy(color = TextPrimary))
+                        Text("Use a dark theme for the app", style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
+                    }
+                    Switch(
+                        checked = isDarkTheme,
+                        onCheckedChange = { viewModel.setDarkTheme(it) },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = Violet500,
+                            uncheckedThumbColor = Color.LightGray,
+                            uncheckedTrackColor = SurfaceElevated
+                        )
                     )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = "Downloads",
+            style = MaterialTheme.typography.labelLarge.copy(color = Violet400)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        GlassCard(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 16.dp,
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                // Default Quality
+                var showQualityDialog by remember { mutableStateOf(false) }
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showQualityDialog = true },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Default Quality", style = MaterialTheme.typography.bodyLarge.copy(color = TextPrimary))
+                        Text("Preferred video resolution", style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
+                    }
+                    Text(
+                        text = defaultQuality,
+                        style = MaterialTheme.typography.bodyMedium.copy(color = Violet400, fontWeight = FontWeight.Bold)
+                    )
+                }
+
+                if (showQualityDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showQualityDialog = false },
+                        title = { Text("Select Quality") },
+                        text = {
+                            Column {
+                                qualities.forEach { quality ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                viewModel.setDefaultQuality(quality)
+                                                showQualityDialog = false
+                                            }
+                                            .padding(vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = (quality == defaultQuality),
+                                            onClick = null
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(quality)
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { showQualityDialog = false }) {
+                                Text("Cancel")
+                            }
+                        },
+                        containerColor = SurfaceElevated,
+                        titleContentColor = TextPrimary,
+                        textContentColor = TextPrimary
+                    )
+                }
+                
+                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = BorderSubtle)
+                
+                // Concurrent Downloads
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text("Concurrent Downloads", style = MaterialTheme.typography.bodyLarge.copy(color = TextPrimary))
+                            Text("Maximum active tasks: $maxConcurrent", style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
+                        }
+                    }
+                    Slider(
+                        value = maxConcurrent.toFloat(),
+                        onValueChange = { viewModel.setMaxConcurrentDownloads(it.toInt()) },
+                        valueRange = 1f..5f,
+                        steps = 3,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Violet400,
+                            activeTrackColor = Violet400,
+                            inactiveTrackColor = BorderSubtle
+                        )
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // About / Info
+        GlassCard(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 16.dp,
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Rounded.Info,
+                    contentDescription = null,
+                    tint = TextSecondary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text("StreamDrop v1.0.0", style = MaterialTheme.typography.bodyMedium.copy(color = TextPrimary))
+                    Text("Built with yt-dlp and Jetpack Compose", style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
                 }
             }
         }
     }
 }
-
-// ─── Stepper Row ─────────────────────────────────────────────────────────────
-
-@Composable
-private fun SettingsStepperRow(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    value: Int,
-    range: IntRange,
-    onStep: (Int) -> Unit,
-) {
-    Row(
-        modifier          = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SettingsIconBox(icon = icon)
-        Spacer(modifier = Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title,    style = MaterialTheme.typography.bodyLarge.copy(color = TextPrimary, fontWeight = FontWeight.Medium))
-            Text(text = subtitle, style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(
-                onClick = { if (value > range.first) onStep(value - 1) },
-                enabled = value > range.first,
-            ) {
-                Icon(Icons.Rounded.Remove, contentDescription = "Decrease", tint = if (value > range.first) Violet400 else TextTertiary)
-            }
-            Text(
-                text  = value.toString(),
-                style = MaterialTheme.typography.titleMedium.copy(color = TextPrimary),
-            )
-            IconButton(
-                onClick = { if (value < range.last) onStep(value + 1) },
-                enabled = value < range.last,
-            ) {
-                Icon(Icons.Rounded.Add, contentDescription = "Increase", tint = if (value < range.last) Violet400 else TextTertiary)
-            }
-        }
-    }
-}
-
-// ─── Icon Box ─────────────────────────────────────────────────────────────────
-
-@Composable
-private fun SettingsIconBox(icon: ImageVector) {
-    Box(
-        modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Violet500.copy(alpha = 0.15f)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector        = icon,
-            contentDescription = null,
-            tint               = Violet400,
-            modifier           = Modifier.size(20.dp),
-        )
-    }
-}
-
-

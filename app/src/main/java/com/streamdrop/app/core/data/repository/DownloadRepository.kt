@@ -67,6 +67,7 @@ class DownloadRepository @Inject constructor(
         val downloadRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
             .setConstraints(constraints)
             .setInputData(workData)
+            .addTag("download_$downloadId")
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
 
@@ -76,9 +77,11 @@ class DownloadRepository @Inject constructor(
     }
 
     suspend fun cancelDownload(downloadId: Long) {
-        // Cancel the WorkManager task
-        // We need a tag to cancel it effectively, but let's just use cancelAllWorkByTag
-        // Actually it's better to cancel by ID if we stored the UUID, or just delete from DB and let worker fail
         downloadDao.updateStatus(downloadId, DownloadStatus.CANCELED)
+        WorkManager.getInstance(context).cancelAllWorkByTag("download_$downloadId")
+    }
+
+    suspend fun deleteDownload(downloadId: Long) {
+        downloadDao.deleteDownload(downloadId)
     }
 }

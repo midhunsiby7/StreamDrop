@@ -96,8 +96,10 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
-    // WorkManager
+    // WorkManager & Hilt Work
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.work.compiler)
 
     // Image loading
     implementation(libs.coil.compose)
@@ -110,16 +112,6 @@ dependencies {
     
     // JSON Parsing
     implementation(libs.gson)
-
-    // Room
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-
-    // WorkManager & Hilt Work
-    implementation(libs.work.runtime.ktx)
-    implementation(libs.hilt.work)
-    ksp(libs.hilt.work.compiler)
 
     // Testing
     testImplementation(libs.junit)

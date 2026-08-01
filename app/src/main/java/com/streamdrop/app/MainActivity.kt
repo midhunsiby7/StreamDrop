@@ -26,23 +26,25 @@ import dagger.hilt.android.AndroidEntryPoint
  * - Scaffold provides bottom bar + content area
  * - StreamDropNavGraph handles all navigation
  */
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.streamdrop.app.feature.settings.SettingsViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Install splash screen BEFORE super.onCreate()
         val splashScreen = installSplashScreen()
-
         super.onCreate(savedInstanceState)
-
-        // Keep the splash on-screen until the first frame is drawn
-        // In Stage 2+ we'll also keep it visible while fetching initial data
         splashScreen.setKeepOnScreenCondition { false }
-
         enableEdgeToEdge()
 
         setContent {
-            StreamDropTheme {
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val isDarkTheme by settingsViewModel.isDarkTheme.collectAsState()
+
+            StreamDropTheme(darkTheme = isDarkTheme) {
                 StreamDropApp()
             }
         }
