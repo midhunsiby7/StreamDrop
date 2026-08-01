@@ -26,9 +26,13 @@ import com.streamdrop.app.core.ui.components.GlassCard
 import com.streamdrop.app.core.ui.theme.*
 import java.io.File
 
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
+
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
 fun HistoryScreen(
@@ -36,6 +40,7 @@ fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel()
 ) {
     val downloads by viewModel.allDownloads.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -57,12 +62,22 @@ fun HistoryScreen(
                 text = "History",
                 style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Search Bar
+            HistorySearchBar(
+                query = searchQuery,
+                onQueryChange = viewModel::onSearchQueryChange,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             if (downloads.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = "No download history.",
+                        text = if (searchQuery.isEmpty()) "No download history." else "No matches found.",
                         style = MaterialTheme.typography.bodyLarge.copy(color = TextSecondary)
                     )
                 }
@@ -139,6 +154,21 @@ fun HistoryScreen(
                                         onOpenDownload(download.id)
                                     }
                                 },
+                                onShare = {
+                                    if (download.status == DownloadStatus.COMPLETED) {
+                                        val uri = androidx.core.content.FileProvider.getUriForFile(
+                                            context,
+                                            "${context.packageName}.provider",
+                                            File(download.destinationPath)
+                                        )
+                                        val intent = Intent(Intent.ACTION_SEND).apply {
+                                            type = "video/*"
+                                            putExtra(Intent.EXTRA_STREAM, uri)
+                                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        }
+                                        context.startActivity(Intent.createChooser(intent, "Share Video"))
+                                    }
+                                },
                                 onDelete = {
                                     scope.launch {
                                         viewModel.deleteDownload(download)
@@ -155,9 +185,40 @@ fun HistoryScreen(
 }
 
 @Composable
+fun HistorySearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier,
+        placeholder = { Text("Search downloads...", color = TextSecondary) },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Rounded.Search,
+                contentDescription = null,
+                tint = TextSecondary
+            )
+        },
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Violet400,
+            unfocusedBorderColor = SurfaceElevated,
+            focusedContainerColor = SurfaceElevated.copy(alpha = 0.5f),
+            unfocusedContainerColor = SurfaceElevated.copy(alpha = 0.5f),
+            cursorColor = Violet400
+        ),
+        singleLine = true
+    )
+}
+
+@Composable
 fun HistoryItem(
     download: DownloadEntity,
     onPlay: () -> Unit,
+    onShare: () -> Unit,
     onDelete: () -> Unit
 ) {
     GlassCard(
@@ -201,6 +262,13 @@ fun HistoryItem(
             Spacer(modifier = Modifier.width(8.dp))
             
             if (download.status == DownloadStatus.COMPLETED) {
+                IconButton(onClick = onShare) {
+                    Icon(
+                        imageVector = Icons.Rounded.Share,
+                        contentDescription = "Share",
+                        tint = TextSecondary
+                    )
+                }
                 IconButton(onClick = onPlay) {
                     Icon(
                         imageVector = Icons.Rounded.PlayArrow,
