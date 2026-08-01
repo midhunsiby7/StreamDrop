@@ -34,6 +34,7 @@ class DownloadWorker @AssistedInject constructor(
     
     // yt-dlp outputs progress like "[download]  45.3% of 10.2MiB at 1.2MiB/s"
     private val progressPattern = Pattern.compile("\\[download\\]\\s+([0-9.]+)%")
+    private val errorPattern = Pattern.compile("ERROR:.*")
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val downloadId = inputData.getLong(KEY_DOWNLOAD_ID, -1L)
@@ -121,12 +122,37 @@ class DownloadWorker @AssistedInject constructor(
                 Result.success()
             } else {
                 val error = process.errorStream.bufferedReader().use { it.readText() }
+                val userFriendlyError = when {
+                    error.contains("Sign in to confirm your age", ignoreCase = true) -> "Age-restricted content. Please login."
+                    error.contains("Video unavailable", ignoreCase = true) -> "Video is unavailable or private."
+                    error.contains("Incomplete YouTube URL", ignoreCase = true) -> "Invalid YouTube URL."
+                    else -> "Download failed. Please try again."
+                }
+                
                 downloadDao.updateStatus(downloadId, DownloadStatus.FAILED)
+                
+                // Show error notification
+                val errorNotification = NotificationCompat.Builder(appContext, channelId)
+                    .setContentTitle("Download Failed")
+                    .setContentText(userFriendlyError)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .build()
+                notificationManager.notify(notificationId, errorNotification)
+                
                 Result.failure()
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            val errorMessage = e.message ?: "Unknown error occurred"
             downloadDao.updateStatus(downloadId, DownloadStatus.FAILED)
+            
+            val errorNotification = NotificationCompat.Builder(appContext, channelId)
+                .setContentTitle("Download Error")
+                .setContentText(errorMessage)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .build()
+            notificationManager.notify(notificationId, errorNotification)
+
             Result.failure()
         }
     }
