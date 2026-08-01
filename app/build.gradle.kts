@@ -107,6 +107,9 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    
+    // JSON Parsing
+    implementation(libs.gson)
 
     // Testing
     testImplementation(libs.junit)
