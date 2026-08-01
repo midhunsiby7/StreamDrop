@@ -44,8 +44,8 @@ fun StreamDropNavGraph(
         // ─── History ──────────────────────────────────────────────────────────
         composable(route = Screen.History.route) {
             HistoryScreen(
-                onOpenDownload = { downloadId ->
-                    navController.navigate(Screen.Download.createRoute(downloadId))
+                onOpenDownload = { _ ->
+                    navController.navigate(Screen.Download.createRoute())
                 }
             )
         }

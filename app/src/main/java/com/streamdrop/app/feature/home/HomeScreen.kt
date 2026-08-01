@@ -355,52 +355,6 @@ fun HomeScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // ── Feature Hint Row ───────────────────────────────────────────
-            Row(
-                modifier              = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                FeatureHintChip(icon = Icons.Rounded.VideoFile,  label = "MP4 Video")
-                FeatureHintChip(icon = Icons.Rounded.AudioFile,  label = "MP3 Audio")
-                FeatureHintChip(icon = Icons.Rounded.HighQuality, label = "4K / 1080p")
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-        }
-    }
-}
-
-// ─── Small feature hint chips displayed below the input ───────────────────────
-
-@Composable
-private fun RowScope.FeatureHintChip(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    label: String,
-) {
-    GlassCard(
-        modifier     = Modifier.weight(1f),
-        cornerRadius = 14.dp,
-        glowColor    = Violet500.copy(alpha = 0.2f),
-    ) {
-        Column(
-            modifier            = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Icon(
-                imageVector        = icon,
-                contentDescription = null,
-                tint               = Violet400,
-                modifier           = Modifier.size(20.dp),
-            )
-            Text(
-                text  = label,
-                style = MaterialTheme.typography.labelSmall.copy(color = TextSecondary),
-            )
         }
     }
 }

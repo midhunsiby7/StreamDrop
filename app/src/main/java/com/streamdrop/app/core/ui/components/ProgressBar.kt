@@ -29,11 +29,21 @@ fun AnimatedProgressBar(
     modifier: Modifier = Modifier,
     showGlow: Boolean = true,
 ) {
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress.coerceIn(0f, 1f),
-        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
-        label = "progress",
-    )
+    if (progress <= 0f) {
+        LinearProgressIndicator(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .clip(RoundedCornerShape(50)),
+            color = Violet400,
+            trackColor = Color(0xFF2A2B3A)
+        )
+    } else {
+        val animatedProgress by animateFloatAsState(
+            targetValue = progress.coerceIn(0f, 1f),
+            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+            label = "progress",
+        )
 
     Box(
         modifier = modifier
@@ -83,6 +93,7 @@ fun AnimatedProgressBar(
             )
         }
     }
+}
 }
 
 // ─── Section Divider ──────────────────────────────────────────────────────────

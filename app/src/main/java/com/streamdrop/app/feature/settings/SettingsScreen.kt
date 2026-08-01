@@ -1,11 +1,17 @@
 package com.streamdrop.app.feature.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.streamdrop.app.core.ui.components.GlassCard
@@ -20,6 +26,8 @@ fun SettingsScreen(
     val maxConcurrent by viewModel.maxConcurrentDownloads.collectAsState()
 
     val qualities = listOf("Best", "4K", "1080p", "720p", "480p", "Audio Only")
+    
+    var showClearHistoryDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -174,6 +182,65 @@ fun SettingsScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        Text(
+            text = "Storage",
+            style = MaterialTheme.typography.labelLarge.copy(color = Violet400)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        GlassCard(
+            modifier = Modifier.fillMaxWidth(),
+            cornerRadius = 16.dp,
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showClearHistoryDialog = true },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Clear Download History", style = MaterialTheme.typography.bodyLarge.copy(color = TextPrimary))
+                        Text("Remove all records and downloaded files", style = MaterialTheme.typography.bodySmall.copy(color = TextSecondary))
+                    }
+                    Icon(
+                        imageVector = Icons.Rounded.DeleteSweep,
+                        contentDescription = null,
+                        tint = StatusError
+                    )
+                }
+            }
+        }
+
+        if (showClearHistoryDialog) {
+            AlertDialog(
+                onDismissRequest = { showClearHistoryDialog = false },
+                title = { Text("Clear All History?") },
+                text = { Text("This will permanently delete all download records and the downloaded media files. This action cannot be undone.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.clearHistory()
+                            showClearHistoryDialog = false
+                        }
+                    ) {
+                        Text("Clear All", color = StatusError)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showClearHistoryDialog = false }) {
+                        Text("Cancel")
+                    }
+                },
+                containerColor = SurfaceElevated,
+                titleContentColor = TextPrimary,
+                textContentColor = TextPrimary
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
         // About / Info
         GlassCard(
             modifier = Modifier.fillMaxWidth(),
@@ -184,7 +251,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Rounded.Info,
+                    imageVector = Icons.Rounded.Info,
                     contentDescription = null,
                     tint = TextSecondary
                 )

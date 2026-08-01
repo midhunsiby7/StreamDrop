@@ -11,6 +11,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.streamdrop.app.core.data.repository.DownloadRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,8 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "se
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val application: Application
+    private val application: Application,
+    private val downloadRepository: DownloadRepository
 ) : ViewModel() {
 
     private val dataStore = application.dataStore
@@ -71,6 +73,12 @@ class SettingsViewModel @Inject constructor(
             dataStore.edit { preferences ->
                 preferences[CONCURRENT_KEY] = count
             }
+        }
+    }
+
+    fun clearHistory() {
+        viewModelScope.launch {
+            downloadRepository.clearAllDownloads()
         }
     }
 }

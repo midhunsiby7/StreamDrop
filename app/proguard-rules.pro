@@ -5,6 +5,10 @@
 # Keep yt-dlp process invocation
 -keep class com.streamdrop.app.core.data.ytdlp.** { *; }
 
+# youtubedl-android
+-keep class com.yausername.youtubedl_android.** { *; }
+-keep class com.yausername.ffmpeg.** { *; }
+
 # Room
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *

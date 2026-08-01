@@ -15,7 +15,9 @@ data class DownloadEntity(
     val progress: Float, // 0.0 to 1.0
     val totalBytes: Long,
     val downloadedBytes: Long,
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    /** Human-readable failure reason (null when not failed). */
+    val errorMessage: String? = null
 )
 
 enum class DownloadStatus {

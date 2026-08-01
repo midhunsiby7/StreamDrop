@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
-import com.streamdrop.app.core.navigation.BottomNavBar
+import com.streamdrop.app.core.navigation.StreamDropBottomBar
 import com.streamdrop.app.core.navigation.StreamDropNavGraph
 import com.streamdrop.app.core.ui.theme.StreamDropTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,19 +45,19 @@ class MainActivity : ComponentActivity() {
             val isDarkTheme by settingsViewModel.isDarkTheme.collectAsState()
 
             StreamDropTheme(darkTheme = isDarkTheme) {
-                StreamDropApp()
+                StreamDropMainContent()
             }
         }
     }
 }
 
 @Composable
-private fun StreamDropApp() {
+private fun StreamDropMainContent() {
     val navController = rememberNavController()
 
     Scaffold(
         bottomBar = {
-            BottomNavBar(navController = navController)
+            StreamDropBottomBar(navController = navController)
         },
         containerColor = com.streamdrop.app.core.ui.theme.Background,
     ) { innerPadding ->

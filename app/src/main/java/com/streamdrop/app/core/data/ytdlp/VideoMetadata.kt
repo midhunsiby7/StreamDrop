@@ -16,6 +16,7 @@ data class YtDlpMetadata(
     val duration: Long?, // in seconds
     @SerializedName("upload_date") val uploadDate: String?, // YYYYMMDD
     val thumbnail: String?,
+    @SerializedName("view_count") val viewCount: Long?,
     val formats: List<YtDlpFormat>?
 )
 

@@ -111,7 +111,7 @@ fun StreamDropBottomBar(navController: NavController) {
 }
 
 @Composable
-private fun BottomNavTab(
+private fun RowScope.BottomNavTab(
     item: BottomNavItem,
     isSelected: Boolean,
     onClick: () -> Unit,

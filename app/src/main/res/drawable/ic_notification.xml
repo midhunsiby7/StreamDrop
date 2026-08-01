@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Monochrome status-bar icon (adaptive mipmaps cannot be used as notification small icons). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,3C12,3 7,8.5 7,12c0,2.8 2.2,5 5,5s5,-2.2 5,-5C17,8.5 12,3 12,3z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M11,11h2v5h-2z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M8.5,14.5L12,18l3.5,-3.5" />
+</vector>

@@ -114,7 +114,7 @@ fun Modifier.coloredShadow(
         val paint = Paint().apply {
             asFrameworkPaint().apply {
                 isAntiAlias = true
-                color = Color.Transparent.toArgb()
+                this.color = android.graphics.Color.TRANSPARENT
                 setShadowLayer(
                     blurRadius.toPx(),
                     offsetX.toPx(),

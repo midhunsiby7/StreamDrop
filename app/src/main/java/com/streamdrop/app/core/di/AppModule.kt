@@ -32,7 +32,7 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "streamdrop_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

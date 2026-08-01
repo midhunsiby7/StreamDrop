@@ -25,6 +25,7 @@ import com.streamdrop.app.core.data.db.DownloadStatus
 import com.streamdrop.app.core.ui.components.GlassCard
 import com.streamdrop.app.core.ui.theme.*
 import java.io.File
+import android.webkit.MimeTypeMap
 
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.ui.graphics.Color
@@ -32,6 +33,14 @@ import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.launch
 
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.FolderOpen
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import android.provider.DocumentsContract
+import android.net.Uri
+import android.os.Environment
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Composable
@@ -58,10 +67,53 @@ fun HistoryScreen(
                 .padding(horizontal = 24.dp),
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "History",
-                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "History",
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                )
+                
+                IconButton(onClick = {
+                    // Try ACTION_VIEW with a FileProvider URI
+                    val streamDropDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "StreamDrop")
+                    val uri = androidx.core.content.FileProvider.getUriForFile(context, "${context.packageName}.provider", streamDropDir)
+                    val fallbackIntent = Intent(Intent.ACTION_VIEW).apply {
+                        setDataAndType(uri, "vnd.android.document/directory")
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    val resolveInfo = context.packageManager.resolveActivity(fallbackIntent, 0)
+                    
+                    if (resolveInfo != null) {
+                        try {
+                            context.startActivity(fallbackIntent)
+                        } catch (e: Exception) {
+                            val finalFallback = Intent(android.app.DownloadManager.ACTION_VIEW_DOWNLOADS)
+                            finalFallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            try { 
+                                context.startActivity(finalFallback) 
+                                scope.launch { snackbarHostState.showSnackbar("Opened Downloads. StreamDrop subfolder not supported by your file manager.") }
+                            } catch (e2: Exception) {}
+                        }
+                    } else {
+                        val finalFallback = Intent(android.app.DownloadManager.ACTION_VIEW_DOWNLOADS)
+                        finalFallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        try { 
+                            context.startActivity(finalFallback)
+                            scope.launch { snackbarHostState.showSnackbar("Opened Downloads. StreamDrop subfolder not supported by your file manager.") }
+                        } catch (e: Exception) {}
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.FolderOpen,
+                        contentDescription = "Open Downloads Folder",
+                        tint = TextPrimary
+                    )
+                }
+            }
             
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -137,12 +189,15 @@ fun HistoryScreen(
                                 onPlay = {
                                     if (download.status == DownloadStatus.COMPLETED) {
                                         val intent = Intent(Intent.ACTION_VIEW).apply {
+                                            val file = File(download.destinationPath)
                                             val uri = androidx.core.content.FileProvider.getUriForFile(
                                                 context,
                                                 "${context.packageName}.provider",
-                                                File(download.destinationPath)
+                                                file
                                             )
-                                            setDataAndType(uri, "video/*")
+                                            val extension = file.extension.lowercase()
+                                            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "*/*"
+                                            setDataAndType(uri, mimeType)
                                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                         }
                                         try {
@@ -156,13 +211,16 @@ fun HistoryScreen(
                                 },
                                 onShare = {
                                     if (download.status == DownloadStatus.COMPLETED) {
+                                        val file = File(download.destinationPath)
                                         val uri = androidx.core.content.FileProvider.getUriForFile(
                                             context,
                                             "${context.packageName}.provider",
-                                            File(download.destinationPath)
+                                            file
                                         )
                                         val intent = Intent(Intent.ACTION_SEND).apply {
-                                            type = "video/*"
+                                            val extension = file.extension.lowercase()
+                                            val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "*/*"
+                                            type = mimeType
                                             putExtra(Intent.EXTRA_STREAM, uri)
                                             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                         }
@@ -190,28 +248,42 @@ fun HistorySearchBar(
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        modifier = modifier,
-        placeholder = { Text("Search downloads...", color = TextSecondary) },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Rounded.Search,
-                contentDescription = null,
-                tint = TextSecondary
-            )
-        },
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Violet400,
-            unfocusedBorderColor = SurfaceElevated,
-            focusedContainerColor = SurfaceElevated.copy(alpha = 0.5f),
-            unfocusedContainerColor = SurfaceElevated.copy(alpha = 0.5f),
-            cursorColor = Violet400
-        ),
-        singleLine = true
+    var isFocused by remember { mutableStateOf(false) }
+    val animatedWidth by animateFloatAsState(
+        targetValue = if (isFocused || query.isNotEmpty()) 1f else 0.8f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy),
+        label = "search_width"
     )
+
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier
+                .fillMaxWidth(animatedWidth)
+                .onFocusChanged { isFocused = it.isFocused },
+            placeholder = { Text("Search downloads...", color = TextSecondary) },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Rounded.Search,
+                    contentDescription = null,
+                    tint = TextSecondary
+                )
+            },
+            shape = RoundedCornerShape(12.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Violet400,
+                unfocusedBorderColor = SurfaceElevated,
+                focusedContainerColor = SurfaceElevated.copy(alpha = 0.5f),
+                unfocusedContainerColor = SurfaceElevated.copy(alpha = 0.5f),
+                cursorColor = Violet400
+            ),
+            singleLine = true
+        )
+    }
 }
 
 @Composable
@@ -251,12 +323,21 @@ fun HistoryItem(
                 
                 Spacer(modifier = Modifier.height(4.dp))
                 
-                Text(
-                    text = download.status.name,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = if (download.status == DownloadStatus.COMPLETED) Teal400 else TextSecondary
+                if (download.status == DownloadStatus.FAILED && download.errorMessage != null) {
+                    Text(
+                        text = "Download Failed",
+                        style = MaterialTheme.typography.bodySmall.copy(color = StatusError),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                )
+                } else {
+                    Text(
+                        text = download.status.name,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            color = if (download.status == DownloadStatus.COMPLETED) Teal400 else TextSecondary
+                        )
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.width(8.dp))

@@ -21,6 +21,20 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Required by youtubedl-android for packaged native executables
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("armeabi-v7a", "arm64-v8a")
+            isUniversalApk = true
+        }
     }
 
     buildTypes {
@@ -60,6 +74,10 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+        jniLibs {
+            useLegacyPackaging = true
+            pickFirsts.add("**/libc++_shared.so")
         }
     }
 }
@@ -110,6 +128,10 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     
+    // youtubedl-android (official Maven Central artifacts)
+    implementation(libs.youtubedl.library)
+    implementation(libs.youtubedl.ffmpeg)
+
     // JSON Parsing
     implementation(libs.gson)
 
