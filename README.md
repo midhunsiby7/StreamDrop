@@ -145,7 +145,7 @@ History
 
 This project was much more than simply building a downloader.
 
-It involved weeks of debugging, optimization, profiling and testing to make the application stable on real Android devices.
+It involved hours of debugging, optimization, profiling and testing to make the application stable on real Android devices.
 
 Some of the engineering challenges solved include:
 
